@@ -1,4 +1,5 @@
 using System.Collections;
+using Lab12.Exceptions;
 
 namespace Lab12.BidirectionalList
 {
@@ -36,34 +37,18 @@ namespace Lab12.BidirectionalList
             if (IsDisposed) return;
             if (disposing)
             {
-                Clear();
-                Console.WriteLine($"BidirectionalList.Dispose({disposing}) called. Count: {Count}");
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                Clear(); // типа правильное удаление (GC и без этого бы справился)
+                Console.WriteLine("BidirectionalList.Dispose called.");
+                GC.Collect(); // delete nodes from memory
+                GC.WaitForPendingFinalizers(); // waiting 
             }
             IsDisposed = true;
         }
 
-        public T this[int index]
-        {
-            get => NodeAt(index).Value;
-            set => NodeAt(index).Value = value;
-        }
-
-        private BidirectionalListNode<T> NodeAt(int index)
-        {
-            var _index = 0;
-            var node = First;
-            while (_index < index && node != null) { node = node.Next; _index++; }
-            if (node == null)
-                throw new ArgumentOutOfRangeException(nameof(index), $"No node at index {index}.");
-            return node;
-        }
-
         public void Add(T item)
         {
-            if (IsReadOnly) throw new Exception("List is read-only");
-            if (Capacity >= 0 && Count >= Capacity) throw new Exception("List is full");
+            if (IsReadOnly) throw new CollectionIsReadOnlyException();
+            if (Capacity >= 0 && Count >= Capacity) throw new CollectionIsFullException();
             var newNode = new BidirectionalListNode<T>(item);
             if (Last == null)
             {
@@ -87,10 +72,10 @@ namespace Lab12.BidirectionalList
 
         public void AddAfter(T after, T item)
         {
-            if (IsReadOnly) throw new Exception("List is read-only");
-            if (Capacity >= 0 && Count >= Capacity) throw new Exception("List is full");
+            if (IsReadOnly) throw new CollectionIsReadOnlyException();
+            if (Capacity >= 0 && Count >= Capacity) throw new CollectionIsFullException();
 
-            var node = First ?? throw new ArgumentException("List is empty");
+            var node = First ?? throw new CollectionIsEmptyException();
 
             var inserted = false;
             do
@@ -110,7 +95,7 @@ namespace Lab12.BidirectionalList
                 }
                 node = node.Next;
             } while (!inserted && node != null);
-            if (!inserted) throw new ArgumentException($"No node with value {after} founded");
+            if (!inserted) throw new ArgumentException($"Node with value {after} not found");
         }
 
         public void Clear()
@@ -135,7 +120,7 @@ namespace Lab12.BidirectionalList
 
         public bool Remove(T item)
         {
-            if (IsReadOnly) throw new Exception("List is read-only");
+            if (IsReadOnly) throw new CollectionIsReadOnlyException();
 
             var node = First;
             if (node == null) return false;
@@ -170,12 +155,25 @@ namespace Lab12.BidirectionalList
             return result;
         }
 
-        public IEnumerator<T> GetEnumerator() => new BidirectionalListEnumerator<T>(this);
+        public IEnumerator<T> GetEnumerator() => new BidirectionalListEnumerator<T>(First);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public object Clone() => new BidirectionalList<T>(this);
 
         public BidirectionalList<T> ShallowCopy() => (BidirectionalList<T>)MemberwiseClone();
+
+        public override string ToString()
+        {
+            var result = new string[Count];
+            var formatString = $"{{0,{Count.ToString().Length}}}. {{1}}";
+            var index = 0;
+            foreach (var item in this)
+            {
+                result[index] = string.Format(formatString, index + 1, item);
+                index++;
+            }
+            return string.Join('\n', result);
+        }
     }
 }

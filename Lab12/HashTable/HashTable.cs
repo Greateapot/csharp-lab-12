@@ -1,4 +1,5 @@
 using System.Collections;
+using Lab12.Exceptions;
 
 namespace Lab12.HashTable
 {
@@ -46,8 +47,8 @@ namespace Lab12.HashTable
 
         public void Add(T item)
         {
-            if (IsReadOnly) throw new Exception("HashTable is read-only");
-            if (Capacity >= 0 && Count >= Capacity) throw new Exception("HashTable is full");
+            if (IsReadOnly) throw new CollectionIsReadOnlyException();
+            if (Capacity >= 0 && Count >= Capacity) throw new CollectionIsFullException();
 
             var hash = CalculateHash(item);
             var node = table[hash];
@@ -79,8 +80,8 @@ namespace Lab12.HashTable
 
         public bool Remove(T item)
         {
-            if (IsReadOnly) throw new Exception("HashTable is read-only");
-            if (Count == 0) throw new Exception("HashTable is empty");
+            if (IsReadOnly) throw new CollectionIsReadOnlyException();
+            if (Count == 0) throw new CollectionIsEmptyException();
 
             var hash = CalculateHash(item);
             var node = table[hash];
@@ -164,7 +165,7 @@ namespace Lab12.HashTable
             if (disposing)
             {
                 Clear();
-                Console.WriteLine($"HashTable.Dispose({disposing}) called. Count: {Count}");
+                Console.WriteLine($"HashTable.Dispose called.");
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
@@ -189,11 +190,11 @@ namespace Lab12.HashTable
                     }
                     else
                     {
-                        var temp = $"{index + 1}. {node}";
+                        var temp = $"{index + 1}. {node.Value}";
                         while (node.Next != null)
                         {
                             node = node.Next;
-                            temp += $" --> {node}";
+                            temp += $" --> {node.Value}";
                         }
                         result[index] = temp;
                     }

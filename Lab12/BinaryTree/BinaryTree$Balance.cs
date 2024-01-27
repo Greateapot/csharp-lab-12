@@ -2,7 +2,7 @@ namespace Lab12.BinaryTree
 {
     public partial class BinaryTree<T>
     {
-        private const string RotateArgumentExceptionMessage = "can't rotate (no element)";
+        private const string RotateArgumentExceptionMessage = "Can't rotate (node is null)";
 
         private static int Height(BinaryTreeNode<T>? node)
         {

@@ -1,4 +1,5 @@
 using System.Collections;
+using Lab12.Exceptions;
 
 namespace Lab12.BinaryTree
 {
@@ -24,15 +25,10 @@ namespace Lab12.BinaryTree
 
         ~BinaryTree() => Dispose(false);
 
-        public override string ToString()
-        {
-            return $"{Count}:\n" + (Root != null ? Root.Print() : "Empty");
-        }
-
         public void Add(T item)
         {
-            if (IsReadOnly) throw new Exception("Tree is read-only");
-            if (Capacity >= 0 && Count >= Capacity) throw new Exception("Tree is full");
+            if (IsReadOnly) throw new CollectionIsReadOnlyException();
+            if (Capacity >= 0 && Count >= Capacity) throw new CollectionIsFullException();
 
             Root = Add(Root, item);
         }
@@ -66,10 +62,10 @@ namespace Lab12.BinaryTree
 
         public bool Remove(T item)
         {
-            if (IsReadOnly) throw new Exception("Tree is read-only");
-            if (Root == null) throw new Exception("Tree is empty");
+            if (IsReadOnly) throw new CollectionIsReadOnlyException();
+            if (Root == null) throw new CollectionIsEmptyException();
 
-            var (newRoot, result) = Remove(Root, item);
+            var (newRoot, result) = BinaryTree<T>.Remove(Root, item);
             if (result)
             {
                 Root = newRoot;
@@ -78,7 +74,8 @@ namespace Lab12.BinaryTree
             return result;
         }
 
-        private (BinaryTreeNode<T>?, bool) Remove(BinaryTreeNode<T> node, T item)
+        // сложно вернуть бульк, если используется рекурсивный метод
+        private static (BinaryTreeNode<T>?, bool) Remove(BinaryTreeNode<T> node, T item)
         {
             var r = item.CompareTo(node.Value);
             if (r < 0)
@@ -86,7 +83,7 @@ namespace Lab12.BinaryTree
                 if (node.Left == null)
                     return (null, false);
 
-                var (newNode, result) = Remove(node.Left, item);
+                var (newNode, result) = BinaryTree<T>.Remove(node.Left, item);
                 node.Left = newNode;
 
                 if (node.Right != null && BalanceFactor(node) < -1)
@@ -101,7 +98,7 @@ namespace Lab12.BinaryTree
                 if (node.Right == null)
                     return (null, false);
 
-                var (newNode, result) = Remove(node.Right, item);
+                var (newNode, result) = BinaryTree<T>.Remove(node.Right, item);
                 node.Right = newNode;
 
                 if (node.Left != null && BalanceFactor(node) > 1)
@@ -120,7 +117,7 @@ namespace Lab12.BinaryTree
                 while (leaf.Left != null)
                     leaf = leaf.Left;
                 node.Value = leaf.Value;
-                var (newNode, result) = Remove(node.Right, leaf.Value);
+                var (newNode, result) = BinaryTree<T>.Remove(node.Right, leaf.Value);
                 node.Right = newNode;
 
                 if (node.Left != null && BalanceFactor(node) > 1)
@@ -176,11 +173,25 @@ namespace Lab12.BinaryTree
             if (disposing)
             {
                 Clear();
-                Console.WriteLine($"BinaryTree.Dispose({disposing}) called. Count: {Count}");
+                Console.WriteLine("BinaryTree.Dispose called.");
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
             IsDisposed = true;
+        }
+
+        public override string ToString()
+            => Root == null ? "Empty tree" : BinaryTree<T>.ToString(Root);
+
+        private static string ToString(BinaryTreeNode<T> node, int level = 0, bool isLeft = false)
+        {
+            var formatString = $"{{0,{level * 2}}} {{1}}\n";
+            var result = level > 0
+                ? string.Format(formatString, isLeft ? "/" : "\\", node.Value)
+                : $"{node.Value}\n";
+            if (node.Left is not null) result += BinaryTree<T>.ToString(node.Left, level + 1, true);
+            if (node.Right is not null) result += BinaryTree<T>.ToString(node.Right, level + 1);
+            return result;
         }
 
         public int GetLeafCount() => Root == null
@@ -200,7 +211,7 @@ namespace Lab12.BinaryTree
         }
 
         public IEnumerator<T> GetEnumerator() => Root == null
-            ? throw new Exception("Tree is empty")
+            ? throw new CollectionIsEmptyException()
             : InOrderTraverse(Root, e => e.Value).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

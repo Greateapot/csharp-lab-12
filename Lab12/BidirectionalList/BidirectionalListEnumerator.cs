@@ -8,31 +8,41 @@ namespace Lab12.BidirectionalList
         {
             get
             {
-                if (!IsValid)
+                if (node == null)
                     throw new ArgumentException();
-                return values[position];
+                return node.Value;
             }
         }
 
         object IEnumerator.Current => Current;
 
-        private int position = -1;
+        private bool InProcess = false;
 
-        private readonly BidirectionalList<T> values;
+        private BidirectionalListNode<T>? node;
 
-        private bool IsValid => position > -1 && position < values.Count;
+        private readonly BidirectionalListNode<T>? root;
 
-        public BidirectionalListEnumerator(BidirectionalList<T> values) => this.values = values;
+        public BidirectionalListEnumerator(BidirectionalListNode<T>? root) => this.root = root;
 
         public void Dispose() => GC.SuppressFinalize(this);
 
         public bool MoveNext()
         {
-            if (position < values.Count)
-                position++;
-            return IsValid;
+            if (!InProcess)
+            {
+                InProcess = true;
+                node = root;
+            }
+            else if (node != null)
+                node = node.Next;
+
+            return node != null;
         }
 
-        public void Reset() => position = -1;
+        public void Reset()
+        {
+            InProcess = false;
+            node = null;
+        }
     }
 }
