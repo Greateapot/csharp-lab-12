@@ -3,7 +3,7 @@ using Lab12.Exceptions;
 
 namespace Lab12.BidirectionalList
 {
-    public class BidirectionalList<T> : ICollection<T>, ICloneable, IDisposable where T : notnull, new()
+    public class BidirectionalList<T> : ICollectionExtension<T> where T : notnull, IComparable<T>, new()
     {
         public int Count { get; private set; }
         public int Capacity { get; private set; }
@@ -37,6 +37,7 @@ namespace Lab12.BidirectionalList
             if (IsDisposed) return;
             if (disposing)
             {
+                IsReadOnly = false;
                 Clear(); // типа правильное удаление (GC и без этого бы справился)
                 Console.WriteLine("BidirectionalList.Dispose called.");
                 GC.Collect(); // delete nodes from memory
@@ -80,7 +81,7 @@ namespace Lab12.BidirectionalList
             var inserted = false;
             do
             {
-                if (node.Value.Equals(after))
+                if (node.Value.CompareTo(after) == 0)
                 {
                     var newNode = new BidirectionalListNode<T>(item)
                     {
@@ -128,7 +129,7 @@ namespace Lab12.BidirectionalList
             var removed = false;
             do
             {
-                if (node.Value.Equals(item))
+                if (node.Value.CompareTo(item) == 0)
                 {
                     if (node == First) First = node.Next;
                     if (node == Last) Last = node.Previous;
@@ -162,6 +163,8 @@ namespace Lab12.BidirectionalList
         public object Clone() => new BidirectionalList<T>(this);
 
         public BidirectionalList<T> ShallowCopy() => (BidirectionalList<T>)MemberwiseClone();
+
+        ICollectionExtension<T> ICollectionExtension<T>.ShallowCopy() => ShallowCopy();
 
         public override string ToString()
         {

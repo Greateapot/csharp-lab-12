@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace Lab12.HashTable
 {
-    public class HashTableEnumerator<T> : IEnumerator<T> where T : notnull, new()
+    public class HashTableEnumerator<T> : IEnumerator<T> where T : notnull, IComparable<T>, new()
     {
         private readonly Func<int, HashTableNode<T>?> getter;
         private HashTableNode<T>? node;

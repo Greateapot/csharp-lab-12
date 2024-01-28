@@ -3,7 +3,7 @@ using Lab12.Exceptions;
 
 namespace Lab12.HashTable
 {
-    public class HashTable<T> : ICollection<T>, ICloneable, IDisposable where T : notnull, new()
+    public class HashTable<T> : ICollectionExtension<T> where T : notnull, IComparable<T>, new()
     {
         public const int DefaultTableSize = 10;
 
@@ -62,7 +62,7 @@ namespace Lab12.HashTable
             {
                 var exists = false;
                 for (; !exists && node.Next != null; node = node.Next)
-                    exists = node.Value.Equals(item);
+                    exists = node.Value.CompareTo(item) == 0;
 
                 if (!exists)
                 {
@@ -87,7 +87,7 @@ namespace Lab12.HashTable
             var node = table[hash];
             if (node == null) return false;
 
-            if (node.Value.Equals(item))
+            if (node.Value.CompareTo(item) == 0)
             {
                 table[hash] = node.Next;
                 Count--;
@@ -99,7 +99,7 @@ namespace Lab12.HashTable
             var removed = false;
             do
             {
-                if (node.Next.Value.Equals(item))
+                if (node.Next.Value.CompareTo(item) == 0)
                 {
                     node.Next = node.Next.Next;
                     Count--;
@@ -130,21 +130,14 @@ namespace Lab12.HashTable
 
         public HashTable<T> ShallowCopy() => (HashTable<T>)MemberwiseClone();
 
+        ICollectionExtension<T> ICollectionExtension<T>.ShallowCopy() => ShallowCopy();
+
         public bool Contains(T item)
         {
-            var hash = CalculateHash(item);
-            var node = table[hash];
-            if (node is null) return false;
-
-            var contains = false;
-            do
-            {
-                if (node.Value.Equals(item))
-                    contains = true;
-                else
-                    node = node.Next;
-            } while (!contains && node is not null);
-            return contains;
+            foreach (var value in this)
+                if (value.CompareTo(item) == 0)
+                    return true;
+            return false;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -164,6 +157,7 @@ namespace Lab12.HashTable
             if (IsDisposed) return;
             if (disposing)
             {
+                IsReadOnly = false;
                 Clear();
                 Console.WriteLine($"HashTable.Dispose called.");
                 GC.Collect();
@@ -201,5 +195,6 @@ namespace Lab12.HashTable
                 }
             return string.Join('\n', result);
         }
+
     }
 }

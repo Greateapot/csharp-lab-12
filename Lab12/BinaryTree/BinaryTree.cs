@@ -3,7 +3,7 @@ using Lab12.Exceptions;
 
 namespace Lab12.BinaryTree
 {
-    public partial class BinaryTree<T> : ICollection<T>, ICloneable, IDisposable where T : notnull, IComparable<T>, new()
+    public partial class BinaryTree<T> : ICollectionExtension<T> where T : notnull, IComparable<T>, new()
     {
         public int Count { get; private set; }
         public int Capacity { get; private set; }
@@ -28,7 +28,7 @@ namespace Lab12.BinaryTree
         public void Add(T item)
         {
             if (IsReadOnly) throw new CollectionIsReadOnlyException();
-            if (Capacity >= 0 && Count >= Capacity) throw new CollectionIsFullException();
+            if (Capacity > 0 && Count >= Capacity) throw new CollectionIsFullException();
 
             Root = Add(Root, item);
         }
@@ -147,10 +147,12 @@ namespace Lab12.BinaryTree
 
         public BinaryTree<T> ShallowCopy() => (BinaryTree<T>)MemberwiseClone();
 
+        ICollectionExtension<T> ICollectionExtension<T>.ShallowCopy() => ShallowCopy();
+
         public bool Contains(T item)
         {
             foreach (var _item in this)
-                if (_item.Equals(item))
+                if (_item.CompareTo(item) == 0)
                     return true;
             return false;
         }
@@ -172,6 +174,7 @@ namespace Lab12.BinaryTree
             if (IsDisposed) return;
             if (disposing)
             {
+                IsReadOnly = false;
                 Clear();
                 Console.WriteLine("BinaryTree.Dispose called.");
                 GC.Collect();
@@ -215,5 +218,6 @@ namespace Lab12.BinaryTree
             : InOrderTraverse(Root, e => e.Value).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
     }
 }
