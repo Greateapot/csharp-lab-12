@@ -6,25 +6,25 @@ namespace Lab12
     public partial class Program
     {
         private static int InputCapacity() => ConsoleIO.Input<int>(
-            "Input capacity: ",
+            Messages.InputCapacity,
             v => v < 1
-                ? "capacity can't be less than one"
+                ? Messages.InputCapacityValueLessThanOne
                 : null
         );
 
         private static int InputSize() => ConsoleIO.Input<int>(
-            "Input size: ",
+            Messages.InputSize,
             v => v < 1
-                ? "size can't be less than one"
+                ? Messages.InputSizeValueLessThanOne
                 : null
         );
 
         private static int InputCount(int capacity = 0) => ConsoleIO.Input<int>(
-            "Input count: ",
+            Messages.InputCount,
             v => v < 1
-                ? "count can't less than one"
+                ? Messages.InputCountValueLessThanOne
                 : capacity > 0 && v > capacity
-                    ? "count can't be greater than capacity"
+                    ? Messages.InputCountValueLessThanCapacity
                     : null
         );
 

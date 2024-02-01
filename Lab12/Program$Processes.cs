@@ -21,7 +21,7 @@ namespace Lab12
             {
                 ConsoleIO.Clear();
                 var count = InputCount(capacity);
-                var isRandom = InputBoolean("Generate random persons?");
+                var isRandom = InputBoolean(Messages.InputGenerateRandomPersons);
                 for (int i = 0; i < count; i++)
                 {
                     var person = new Person();
@@ -31,14 +31,14 @@ namespace Lab12
                         person.Init();
                     list.Add(person);
                 }
-                ConsoleIO.WriteLine($"List:\n{list}\n");
+                ConsoleIO.WriteLineFormat(Messages.PrintList, list);
             }
             {
                 var after = new Person();
-                ConsoleIO.WriteLine("Input after person.");
+                ConsoleIO.WriteLine(Messages.InputAfterPerson);
                 after.Init();
 
-                var isRandom = InputBoolean("Generate random person?");
+                var isRandom = InputBoolean(Messages.InputGenerateRandomPerson);
                 var person = new Person();
                 if (isRandom)
                     person.RandomInit();
@@ -54,11 +54,11 @@ namespace Lab12
                 }
                 catch (CollectionIsFullException)
                 {
-                    ConsoleIO.WriteLine("Can't add element: collection is full.");
+                    ConsoleIO.WriteLine(Messages.CollectionIsFullException);
                 }
                 finally
                 {
-                    ConsoleIO.WriteLine($"List:\n{list}");
+                    ConsoleIO.WriteLineFormat(Messages.PrintList, list);
                 }
             }
 
@@ -74,7 +74,7 @@ namespace Lab12
             {
                 ConsoleIO.Clear();
                 var count = InputCount(capacity);
-                var isRandom = InputBoolean("Generate random persons?");
+                var isRandom = InputBoolean(Messages.InputGenerateRandomPersons);
                 for (int i = 0; i < count; i++)
                 {
                     var person = new Person();
@@ -84,8 +84,8 @@ namespace Lab12
                         person.Init();
                     tree.Add(person);
                 }
-                ConsoleIO.WriteLine($"Binary tree:\n{tree}\n");
-                ConsoleIO.WriteLine($"Count of leafs: {tree.GetLeafCount()}");
+                ConsoleIO.WriteLineFormat(Messages.PrintTree, tree);
+                ConsoleIO.WriteLineFormat(Messages.PrintTreeLeafCount, tree.GetLeafCount());
             }
 
             tree.Dispose();
@@ -101,7 +101,7 @@ namespace Lab12
             {
                 ConsoleIO.Clear();
                 var count = InputCount();
-                var isRandom = InputBoolean("Generate random persons?");
+                var isRandom = InputBoolean(Messages.InputGenerateRandomPersons);
                 for (int i = 0; i < count; i++)
                 {
                     var person = new Person();
@@ -111,7 +111,7 @@ namespace Lab12
                         person.Init();
                     table.Add(person);
                 }
-                ConsoleIO.WriteLine($"Hash table:\n{table}\n");
+                ConsoleIO.WriteLineFormat(Messages.PrintHashTable, table);
             }
             {
                 Person person;
@@ -119,17 +119,16 @@ namespace Lab12
                 do
                 {
                     person = new Person();
-                    ConsoleIO.WriteLine("Input search person.");
+                    ConsoleIO.WriteLine(Messages.InputSearchPerson);
                     person.Init();
                     contains = table.Contains(person);
                     if (!contains)
-                        ConsoleIO.WriteLine("Person not found.");
+                        ConsoleIO.WriteLine(Messages.PersonNotFound);
                 } while (!contains);
 
-                var rr = table.Remove(person);
-                ConsoleIO.WriteLine($"Removing result: {rr}");
-                ConsoleIO.WriteLine($"Contains result: {table.Contains(person)}");
-                ConsoleIO.WriteLine($"Hash table:\n{table}\n");
+                ConsoleIO.WriteLineFormat(Messages.PrintHashTableRemovingResult, table.Remove(person));
+                ConsoleIO.WriteLineFormat(Messages.PrintHashTableContainsResult, table.Contains(person));
+                ConsoleIO.WriteLineFormat(Messages.PrintHashTable, table);
             }
 
             table.Dispose();
@@ -140,138 +139,179 @@ namespace Lab12
 
             BinaryTree<Person>? tree = null;
             var exit = false;
-            var dialog = new ConsoleDialog(
-                "acts",
+
+            ConsoleDialog dialog = new(
+                Messages.Task4DialogTitle,
                 [
-                    new ConsoleDialogOption("init unlimited", _ => {
-                        if (tree != null)
-                            ConsoleIO.WriteLine("tree alr exist");
-                        else
-                            tree = new(); // net8.0 угарает
-                    }, true, true, true),
-                    new ConsoleDialogOption("init limited", _ => {
-                        if (tree != null)
-                            ConsoleIO.WriteLine("tree alr exist");
-                        else
-                            tree = new(InputCapacity());
-                    }, true, true, true),
-                    new ConsoleDialogOption("make rw/ro", _ => {
-                        if (tree == null)
-                        {
-                            ConsoleIO.WriteLine("no tree");
-                            return;
-                        }
-                        tree.IsReadOnly = InputBoolean("make tree read-only?");
-                        if (tree.IsReadOnly)
-                            ConsoleIO.WriteLine("now, tree is read-only");
-                        else
-                            ConsoleIO.WriteLine("now, tree is writable");
-                    }, true, true, true),
-                    new ConsoleDialogOption("add (all)", _ => {
-                        if (tree == null)
-                        {
-                            ConsoleIO.WriteLine("no tree");
-                            return;
-                        }
-                        try {
-                            var count = InputCount(tree.Capacity);
-                            var persons = new Person[count];
-                            for (int i = 0; i < count; i++)
-                            {
-                                persons[i] = new();
-                                persons[i].RandomInit();
-                            }
-                            tree.AddAll(persons);
-                            ConsoleIO.WriteLine("Items added");
-                        } catch (CollectionIsReadOnlyException) {
-                             ConsoleIO.WriteLine("collection is read-only");
-                        } catch (CollectionIsFullException) {
-                            ConsoleIO.WriteLine("collection is full");
-                        }
-                    }, true, true, true),
-                    new ConsoleDialogOption("remove (all)", _ => {
-                        if (tree == null)
-                        {
-                            ConsoleIO.WriteLine("no tree");
-                            return;
-                        }
-                        try {
-                            var count = InputCount(tree.Capacity);
-                            var persons = new Person[count];
-                            for (int i = 0; i < count; i++)
-                            {
-                                persons[i] = new();
-                                persons[i].Init();
-                            }
-                            tree.RemoveAll(persons);
-                            ConsoleIO.WriteLine("Items removed");
-                        } catch (CollectionIsReadOnlyException) {
-                             ConsoleIO.WriteLine("collection is read-only");
-                        } catch (CollectionIsEmptyException) {
-                            ConsoleIO.WriteLine("collection is empty");
-                        }
-                    }, true, true, true),
-                    new ConsoleDialogOption("clear", _ => {
-                        if (tree == null)
-                        {
-                            ConsoleIO.WriteLine("no tree");
-                            return;
-                        }
-                        try {
-                            tree.Clear();
-                            ConsoleIO.WriteLine("tree deleted");
-                        } catch (CollectionIsReadOnlyException) {
-                             ConsoleIO.WriteLine("collection is read-only");
-                        }
-                    }, true, true, true),
-                    new ConsoleDialogOption("find by person data", _ => {
-                        if (tree == null)
-                        {
-                            ConsoleIO.WriteLine("no tree");
-                            return;
-                        }
-                        var person = new Person();
-                        person.Init();
-                        if (tree.Contains(person))
-                            ConsoleIO.WriteLine("tree contains this person");
-                        else
-                            ConsoleIO.WriteLine("not contains");
-                    }, true, true, true),
-                    new ConsoleDialogOption("compare with clone and shallow copy", _ => {
-                        if (tree == null)
-                        {
-                            ConsoleIO.WriteLine("no tree");
-                            return;
-                        }
-                        var clone = (BinaryTree<Person>)tree.Clone();
-                        var copy = tree.ShallowCopy();
-                        ConsoleIO.WriteLine($"Is clone equals: {clone.Equals(tree)}");
-                        ConsoleIO.WriteLine($"Is copy equals: {copy.Equals(tree)}");
-                    }, true, true, true),
-                    new ConsoleDialogOption("dispose", _ => {
-                        if (tree == null)
-                        {
-                            ConsoleIO.WriteLine("no tree");
-                            return;
-                        }
-                        tree.Dispose();
-                        ConsoleIO.WriteLine("tree deleted");
-                    }, true, true, true),
-                    new ConsoleDialogOption("exit", _ => {
-                        exit = true;
-                    }, true, true, true),
+                    new(Messages.Task4DialogOptionInitUnlimited, _ => Task4ProcessInitUnlimited(ref tree), true, true, true),
+                    new(Messages.Task4DialogOptionInitLimited, _ => Task4ProcessInitLimited(ref tree), true, true, true),
+                    new(Messages.Task4DialogOptionMakeReadOnly, _ => Task4ProcessMakeReadOnly(ref tree), true, true, true),
+                    new(Messages.Task4DialogOptionAdd, _ => Task4ProcessAdd(ref tree), true, true, true),
+                    new(Messages.Task4DialogOptionRemove, _ => Task4ProcessRemove(ref tree), true, true, true),
+                    new(Messages.Task4DialogOptionClear, _ => Task4ProcessClear(ref tree), true, true, true),
+                    new(Messages.Task4DialogOptionContains, _ => Task4ProcessContains(ref tree), true, true, true),
+                    new(Messages.Task4DialogOptionCompareWithCopies, _ => Task4ProcessCompareWithCopies(ref tree), true, true, true),
+                    new(Messages.Task4DialogOptionDispose, _ =>Task4ProcessDispose(ref tree), true, true, true),
+                    new(Messages.Task4DialogOptionExit, _ => exit = true, true, true, true),
                 ],
                 false
             );
 
             do
             {
-                dialog.SubTitle = "\nTree:\n" + tree?.ToString();
+                dialog.SubTitle = string.Format(Messages.PrintTree, tree);
                 ConsoleDialog.ShowDialog(dialog);
                 dialog.Reset();
             } while (!exit);
 
             tree?.Dispose();
         }
+
+        private static void Task4ProcessInitUnlimited(ref BinaryTree<Person>? tree)
+        {
+            if (tree != null)
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeAlreadyExists);
+            else
+                tree = []; // net8.0 угарает
+        }
+
+        private static void Task4ProcessInitLimited(ref BinaryTree<Person>? tree)
+        {
+            if (tree != null)
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeAlreadyExists);
+            else
+                tree = new(InputCapacity());
+        }
+
+        private static void Task4ProcessMakeReadOnly(ref BinaryTree<Person>? tree)
+        {
+            if (tree == null)
+            {
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeNotExists);
+                return;
+            }
+            tree.IsReadOnly = InputBoolean(Messages.Task4DialogOptionMakeReadOnly);
+            if (tree.IsReadOnly)
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeIsReadOnly);
+            else
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeIsNotReadOnly);
+        }
+
+        private static void Task4ProcessAdd(ref BinaryTree<Person>? tree)
+        {
+            if (tree == null)
+            {
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeNotExists);
+                return;
+            }
+            try
+            {
+                var count = InputCount(tree.Capacity);
+                var persons = new Person[count];
+                for (int i = 0; i < count; i++)
+                {
+                    persons[i] = new();
+                    persons[i].RandomInit();
+                }
+                tree.AddAll(persons);
+                ConsoleIO.WriteLine(Messages.Task4ProcessItemAdded);
+            }
+            catch (CollectionIsReadOnlyException)
+            {
+                ConsoleIO.WriteLine(Messages.CollectionIsReadOnlyException);
+            }
+            catch (CollectionIsFullException)
+            {
+                ConsoleIO.WriteLine(Messages.CollectionIsFullException);
+            }
+        }
+
+        private static void Task4ProcessRemove(ref BinaryTree<Person>? tree)
+        {
+            if (tree == null)
+            {
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeNotExists);
+                return;
+            }
+            try
+            {
+                var count = InputCount(tree.Capacity);
+                var persons = new Person[count];
+                for (int i = 0; i < count; i++)
+                {
+                    persons[i] = new();
+                    persons[i].Init();
+                }
+                tree.RemoveAll(persons);
+                ConsoleIO.WriteLine(Messages.Task4ProcessItemRemoved);
+            }
+            catch (CollectionIsReadOnlyException)
+            {
+                ConsoleIO.WriteLine(Messages.CollectionIsReadOnlyException);
+            }
+            catch (CollectionIsEmptyException)
+            {
+                ConsoleIO.WriteLine(Messages.CollectionIsEmptyException);
+            }
+        }
+
+        private static void Task4ProcessClear(ref BinaryTree<Person>? tree)
+        {
+            if (tree == null)
+            {
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeNotExists);
+                return;
+            }
+            try
+            {
+                tree.Clear();
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeCleared);
+            }
+            catch (CollectionIsReadOnlyException)
+            {
+                ConsoleIO.WriteLine(Messages.CollectionIsReadOnlyException);
+            }
+        }
+
+        private static void Task4ProcessContains(ref BinaryTree<Person>? tree)
+        {
+            if (tree == null)
+            {
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeNotExists);
+                return;
+            }
+            var person = new Person();
+            person.Init();
+            if (tree.Contains(person))
+                ConsoleIO.WriteLine(Messages.PersonFound);
+            else
+                ConsoleIO.WriteLine(Messages.PersonNotFound);
+        }
+
+        private static void Task4ProcessCompareWithCopies(ref BinaryTree<Person>? tree)
+        {
+            if (tree == null)
+            {
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeNotExists);
+                return;
+            }
+            var clone = (BinaryTree<Person>)tree.Clone();
+            var copy = tree.ShallowCopy();
+            ConsoleIO.WriteLineFormat(Messages.Task4ProcessIsTreeCloneEquals, clone.Equals(tree));
+            ConsoleIO.WriteLineFormat(Messages.Task4ProcessIsTreeCopyEquals, copy.Equals(tree));
+        }
+
+        private static void Task4ProcessDispose(ref BinaryTree<Person>? tree)
+        {
+            if (tree == null)
+            {
+                ConsoleIO.WriteLine(Messages.Task4ProcessTreeNotExists);
+                return;
+            }
+            tree.Dispose();
+            tree = null;
+            ConsoleIO.WriteLine(Messages.Task4ProcessTreeDeleted);
+        }
+
     }
 }
