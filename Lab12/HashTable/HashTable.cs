@@ -81,7 +81,7 @@ namespace Lab12.HashTable
         public bool Remove(T item)
         {
             if (IsReadOnly) throw new CollectionIsReadOnlyException();
-            if (Count == 0) throw new CollectionIsEmptyException();
+            if (Count == 0) return false;
 
             var hash = CalculateHash(item);
             var node = table[hash];
@@ -196,5 +196,12 @@ namespace Lab12.HashTable
             return string.Join('\n', result);
         }
 
+        public override int GetHashCode()
+        {
+            var hashCode = 0;
+            foreach (var item in this)
+                hashCode += item.GetHashCode();
+            return hashCode;
+        }
     }
 }

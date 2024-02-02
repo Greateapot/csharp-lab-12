@@ -178,5 +178,13 @@ namespace Lab12.BidirectionalList
             }
             return string.Join('\n', result);
         }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 0;
+            foreach (var item in this)
+                hashCode += item.GetHashCode();
+            return hashCode;
+        }
     }
 }

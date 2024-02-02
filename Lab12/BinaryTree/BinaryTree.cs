@@ -63,7 +63,7 @@ namespace Lab12.BinaryTree
         public bool Remove(T item)
         {
             if (IsReadOnly) throw new CollectionIsReadOnlyException();
-            if (Root == null) throw new CollectionIsEmptyException();
+            if (Root == null) return false;
 
             var (newRoot, result) = BinaryTree<T>.Remove(Root, item);
             if (result)
@@ -151,10 +151,17 @@ namespace Lab12.BinaryTree
 
         public bool Contains(T item)
         {
-            foreach (var _item in this)
-                if (_item.CompareTo(item) == 0)
-                    return true;
-            return false;
+            var node = Root;
+            if (node == null) return false;
+            var flag = false;
+            do
+            {
+                var r = item.CompareTo(node.Value);
+                if (r > 0) node = node.Right;
+                else if (r < 0) node = node.Left;
+                else flag = true;
+            } while (node != null && !flag);
+            return flag;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -213,11 +220,20 @@ namespace Lab12.BinaryTree
                     yield return item;
         }
 
-        public IEnumerator<T> GetEnumerator() => Root == null
-            ? throw new CollectionIsEmptyException()
-            : InOrderTraverse(Root, e => e.Value).GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => (
+            Root == null
+                ? Enumerable.Empty<T>() // Костыльно, зато правильно
+                : InOrderTraverse(Root, e => e.Value)
+        ).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        public override int GetHashCode()
+        {
+            var hashCode = 0;
+            foreach (var item in this)
+                hashCode += item.GetHashCode();
+            return hashCode;
+        }
     }
 }

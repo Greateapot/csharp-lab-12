@@ -41,8 +41,6 @@ namespace Lab12
         public const string PersonNotFound = "Персона не найдена.";
         public const string PersonFound = "Персона найдена.";
 
-
-        public const string CollectionIsEmptyException = "Ошибка: коллекция пуста.";
         public const string CollectionIsFullException = "Ошибка: коллекция переполнена.";
         public const string CollectionIsReadOnlyException = "Ошибка: коллекция доступна только для чтения.";
 

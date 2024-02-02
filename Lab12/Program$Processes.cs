@@ -190,7 +190,7 @@ namespace Lab12
                 ConsoleIO.WriteLine(Messages.Task4ProcessTreeNotExists);
                 return;
             }
-            tree.IsReadOnly = InputBoolean(Messages.Task4DialogOptionMakeReadOnly);
+            tree.IsReadOnly = InputBoolean(Messages.Task4ProcessMakeTreeReadOnly);
             if (tree.IsReadOnly)
                 ConsoleIO.WriteLine(Messages.Task4ProcessTreeIsReadOnly);
             else
@@ -248,10 +248,6 @@ namespace Lab12
             catch (CollectionIsReadOnlyException)
             {
                 ConsoleIO.WriteLine(Messages.CollectionIsReadOnlyException);
-            }
-            catch (CollectionIsEmptyException)
-            {
-                ConsoleIO.WriteLine(Messages.CollectionIsEmptyException);
             }
         }
 
