@@ -3,7 +3,8 @@ using Lab12.Exceptions;
 
 namespace Lab12.BinaryTree
 {
-    public partial class BinaryTree<T> : ICollectionExtension<T> where T : notnull, IComparable<T>, new()
+    public partial class BinaryTree<T> : ICollection<T>, ICloneable, IDisposable, IEquatable<BinaryTree<T>>
+    where T : IComparable<T>, ICloneable, new()
     {
         public int Count { get; private set; }
         public int Capacity { get; private set; }
@@ -20,7 +21,7 @@ namespace Lab12.BinaryTree
         {
             Capacity = collection.Capacity;
             foreach (var item in collection)
-                Add(item);
+                Add((T)item.Clone());
         }
 
         ~BinaryTree() => Dispose(false);
@@ -145,9 +146,12 @@ namespace Lab12.BinaryTree
 
         public object Clone() => new BinaryTree<T>(this);
 
-        public BinaryTree<T> ShallowCopy() => (BinaryTree<T>)MemberwiseClone();
-
-        ICollectionExtension<T> ICollectionExtension<T>.ShallowCopy() => ShallowCopy();
+        public BinaryTree<T> ShallowCopy()
+        {
+            BinaryTree<T> tree = new(Capacity);
+            foreach (var item in this) tree.Add(item);
+            return tree;
+        }
 
         public bool Contains(T item)
         {
@@ -208,7 +212,6 @@ namespace Lab12.BinaryTree
             ? 0
             : InOrderTraverse(Root, e => e.Left == null && e.Right == null ? 1 : 0).Sum();
 
-
         private static IEnumerable<R> InOrderTraverse<R>(BinaryTreeNode<T> node, Func<BinaryTreeNode<T>, R> func)
         {
             if (node.Left != null)
@@ -234,6 +237,23 @@ namespace Lab12.BinaryTree
             foreach (var item in this)
                 hashCode += item.GetHashCode();
             return hashCode;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not BinaryTree<T>) return false;
+            else return Equals(obj);
+        }
+
+        public bool Equals(BinaryTree<T>? other)
+        {
+            if (other is null) return false;
+            var enumerator = GetEnumerator();
+            var otherEnumerator = other.GetEnumerator();
+            while (enumerator.MoveNext() && otherEnumerator.MoveNext())
+                if (!enumerator.Current.Equals(otherEnumerator.Current))
+                    return false;
+            return true;
         }
     }
 }

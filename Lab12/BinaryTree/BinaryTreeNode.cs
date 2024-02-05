@@ -1,6 +1,6 @@
 namespace Lab12.BinaryTree
 {
-    public class BinaryTreeNode<T>(T value) where T : notnull, IComparable<T>, new()
+    public class BinaryTreeNode<T>(T value) where T : new()
     {
         public T Value { get; set; } = value;
         public BinaryTreeNode<T>? Left { get; set; }

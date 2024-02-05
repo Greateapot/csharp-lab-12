@@ -2,12 +2,6 @@ namespace Lab12
 {
     public static class Messages
     {
-        public const string MainDialogTitle = "Выберите задание:";
-        public const string MainDialogOptionTask1 = "Двунаправленный список";
-        public const string MainDialogOptionTask2 = "Бинарное дерево";
-        public const string MainDialogOptionTask3 = "Хеш-таблица";
-        public const string MainDialogOptionTask4 = "Обобщенная коллекция (бинарное дерево)";
-
         public const string BooleanDialogYes = "Да";
         public const string BooleanDialogNo = "Нет";
 
@@ -26,17 +20,10 @@ namespace Lab12
         public const string InputCapacity = "Введите максимально допустимое количество элементов в коллекции: ";
         public const string InputCapacityValueLessThanOne = "Количество не может быть меньше 1";
 
-        public const string InputSize = "Введите размер хеш-таблицы: ";
-        public const string InputSizeValueLessThanOne = "Размер не может быть меньше 1";
-
         public const string InputCount = "Введите количество элементов: ";
         public const string InputCountValueLessThanOne = "Количество не может быть меньше 1";
         public const string InputCountValueLessThanCapacity = "Количество не может быть больше макс. допустимого кол-ва элементов в коллекции";
 
-        public const string InputGenerateRandomPersons = "Сгенерировать случайных персон? (В противном случае, придется вводить данные персон вручную)";
-        public const string InputGenerateRandomPerson = "Сгенерировать одну случайную персону? (В противном случае, придется вводить данные персоны вручную)";
-        public const string InputAfterPerson = "Введите данные персоны, после которого надо вставить новый элемент.";
-        public const string InputSearchPerson = "Введите данные искомой персоны, чтобы проверить наличие его в коллекции.";
 
         public const string PersonNotFound = "Персона не найдена.";
         public const string PersonFound = "Персона найдена.";
@@ -44,14 +31,8 @@ namespace Lab12
         public const string CollectionIsFullException = "Ошибка: коллекция переполнена.";
         public const string CollectionIsReadOnlyException = "Ошибка: коллекция доступна только для чтения.";
 
-        public const string PrintList = "Двунаправленный список:\n{0}\n";
 
         public const string PrintTree = "Бинарное дерево:\n{0}\n";
-        public const string PrintTreeLeafCount = "Количество листьев: {0}";
-
-        public const string PrintHashTable = "Хеш-таблица:\n{0}\n";
-        public const string PrintHashTableRemovingResult = "Результат удаления элемента: {0}";
-        public const string PrintHashTableContainsResult = "Содержит ли коллекция элемент: {0}";
 
         public const string Task4ProcessTreeAlreadyExists = "Дерево уже существует.";
         public const string Task4ProcessTreeNotExists = "Дерево не существует.";
